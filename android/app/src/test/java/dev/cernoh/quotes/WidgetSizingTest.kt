@@ -1,6 +1,7 @@
 package dev.cernoh.quotes
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -106,6 +107,39 @@ class WidgetSizingTest {
             assertTrue("$width x $height needs a line", tier.maxLines >= 1)
             assertTrue("$width x $height needs a size", tier.quoteSizeSp > 0f)
         }
+    }
+
+    @Test
+    fun anUnsetSizeFallsBackToTheDeclaredSize() {
+        // A launcher that has not filled the options reports zero, and zero would
+        // select the smallest card in a large cell.
+        assertEquals(
+            250 to 284,
+            WidgetSizing.effectiveSize(reported = 0 to 0, declared = 250 to 284),
+        )
+        // A partly filled pair keeps the number it has.
+        assertEquals(
+            224 to 284,
+            WidgetSizing.effectiveSize(reported = 224 to 0, declared = 250 to 284),
+        )
+        assertEquals(
+            224 to 136,
+            WidgetSizing.effectiveSize(reported = 224 to 136, declared = 250 to 284),
+        )
+    }
+
+    @Test
+    fun theWorkLineFollowsTheSizeClass() {
+        val tiny = WidgetSizing.tierFor(WidgetSize.TINY)
+        val regular = WidgetSizing.tierFor(WidgetSize.REGULAR)
+        // The smallest class has no room for the work title, whatever the quote
+        // and the setting say.
+        assertFalse(WidgetSizing.showsWork(tiny, quoteHasWork = true, settingAllows = true))
+        assertTrue(WidgetSizing.showsWork(regular, quoteHasWork = true, settingAllows = true))
+        // A quote without a work title never draws one.
+        assertFalse(WidgetSizing.showsWork(regular, quoteHasWork = false, settingAllows = true))
+        // The user can turn the line off on any card.
+        assertFalse(WidgetSizing.showsWork(regular, quoteHasWork = true, settingAllows = false))
     }
 
     @Test
