@@ -84,11 +84,11 @@ from the GitHub releases:
 3. If a later release exists, tap *Download and install*. The APK lands in the
    app cache, and the system installer asks for your confirmation.
 
-The repository is private, so the GitHub API needs a token. Paste a fine-grained
-token with read access to the releases into the *GitHub token* field and tap
-*Save*. Without a token the check reports that GitHub has no release, because a
-private repository answers `404` to an anonymous request. The token stays on the
-phone. If the repository becomes public, the field can stay empty.
+The repository is public, so the check needs no token: the anonymous release
+request answers with the latest release. The *GitHub token* field exists for the
+case where the repository returns to private, since the API then answers `404` to
+an anonymous request and the field is the only way in. The token stays on the
+phone.
 
 An interrupted update stays in the cache. The settings then offer *Install the
 downloaded update*, so a download is never wasted.

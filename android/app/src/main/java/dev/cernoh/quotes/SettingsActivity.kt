@@ -303,12 +303,12 @@ class SettingsActivity : android.app.Activity() {
      */
     private fun installFile(apk: java.io.File) {
         val silent = Prefs.shizukuInstall(this) &&
-            ShizukuInstaller.state() == ShizukuInstaller.State.READY
+            ShizukuInstaller.state(this) == ShizukuInstaller.State.READY
         updateStatus.text = getString(R.string.install_running)
         Thread {
             try {
                 if (silent) {
-                    val answer = ShizukuInstaller.install(apk)
+                    val answer = ShizukuInstaller.install(this, apk)
                     runOnUiThread {
                         if (isFinishing) return@runOnUiThread
                         updateStatus.text = getString(R.string.install_done, answer)
@@ -339,7 +339,7 @@ class SettingsActivity : android.app.Activity() {
 
         shizukuSwitch.isChecked = Prefs.shizukuInstall(this)
         shizukuSwitch.setOnCheckedChangeListener { _, checked ->
-            val ready = ShizukuInstaller.state() == ShizukuInstaller.State.READY
+            val ready = ShizukuInstaller.state(this) == ShizukuInstaller.State.READY
             if (checked && !ready) {
                 shizukuSwitch.isChecked = false
                 updateStatus.text = getString(R.string.shizuku_switch_needs_ready)
@@ -362,7 +362,7 @@ class SettingsActivity : android.app.Activity() {
 
     /** The state line, the permission button, and the switch follow Shizuku. */
     private fun showShizuku() {
-        val state = ShizukuInstaller.state()
+        val state = ShizukuInstaller.state(this)
         shizukuState.text = when (state) {
             ShizukuInstaller.State.NOT_INSTALLED -> getString(R.string.shizuku_off)
             ShizukuInstaller.State.NOT_RUNNING -> getString(R.string.shizuku_not_running)

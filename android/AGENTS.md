@@ -13,8 +13,10 @@ Gradle project under `android/`, Kotlin sources under
 
 ## Local Contracts
 
-- Framework APIs only. No androidx, so the build needs nothing beyond the SDK
-  and Kotlin. Adding a dependency is a decision, not a detail.
+- The build carries one dependency and one exception to the framework-only rule:
+  the Shizuku API and provider, pinned to 12.2.0, which bring
+  `androidx.annotation` with them. Nothing else from androidx is allowed, and
+  every other dependency is a decision to record in this file.
 - `minSdk 26`, `targetSdk 36`, `compileSdk 36`, Kotlin 2.2.20, AGP 9.2.1,
   Gradle 9.7.1, JDK 21.
 - `app/src/main/assets/quotes.json` is generated. The `copyCorpus` task writes it
@@ -39,6 +41,63 @@ Gradle project under `android/`, Kotlin sources under
   inflates the same layout. The widget overrides them per placement.
 - Every render logs one line: `widget <id> is <w>x<h>dp: <size>sp, maxLines <n>,
   padding <n>dp`. Use `adb logcat -s quotes:I` to see what the launcher reported.
+- Settings live in `SettingsActivity`, one section each: rotation, sources,
+  card, order, and updates. Every change writes to `Prefs` and calls
+  `WidgetRenderer.updateAll` at once, so there is no Apply button.
+  `MainActivity` keeps only the card, the next-quote button, the add-widget
+  button, and the button that opens the settings.
+- Source selections are multi-choice lists built from the corpus, not free text.
+  An empty selection means the whole corpus, and a selection that matches nothing
+  falls back to the whole corpus.
+- `Updates` holds the whole update path: read the latest GitHub release, compare
+  versions, download the APK, then hand it to the installer. An install reaches
+  `PackageInstaller`, which shows the system screen, or Shizuku, which installs
+  without one. Shizuku MUST stay an explicit opt-in: nothing installs without
+  either the system confirmation or the switch the user turned on. The check
+  never runs in the background: the user taps a button or nothing happens.
+- A private repository answers `404` to an anonymous release request, so
+  `Updates.check` reports a missing token rather than a network fault on 404.
+  Keep that distinction: it is the difference between "add a token" and "your
+  network is down".
+- The manifest declares two permissions, one purpose each: `INTERNET` for the
+  update check, and `REQUEST_INSTALL_PACKAGES` for the installer handover. The
+  Shizuku provider declares `INTERACT_ACROSS_USERS_FULL` as well, which is how
+  Shizuku hands its binder to this app; it belongs to the provider, not to the
+  app. A third app permission needs a reason in this file.
+- The Shizuku dependency is pinned to 12.2.0 on purpose. `Shizuku.newProcess` is
+  public there and private from 13.0, and the streamed `pm install` needs it.
+  Moving to 13.x means rewriting the install as a `bindUserService` service.
+  The API also brings `androidx.annotation`, the one androidx artifact in the
+  build; nothing else from androidx is allowed.
+- Shizuku is opt-in and MUST stay opt-in. `Prefs.shizukuInstall` decides, the
+  switch refuses to turn on unless the state is READY, and every path falls back
+  to `Updates.install`, the system installer.
+- `ShizukuInstaller.state(context)` MUST decide presence from the installed
+  package, not from an exception: `Shizuku.pingBinder()` answers `false` instead
+  of throwing when nothing runs, so a user without Shizuku would read the wrong
+  message.
+- The install streams the APK on standard input (`pm install -r -S <size>`), so
+  the app-private cache file never has to be readable by the shell user.
+- `PackageInstaller.Session.commit` needs a **mutable** `PendingIntent` on
+  Android 14 and later. An immutable one throws
+  `IllegalArgumentException: The commit() status receiver should come from a
+  mutable PendingIntent`, and the whole app dies. Found this way on
+  2026-09-19; `assembleDebug` and lint do not catch it.
+- The system installer path is NOT yet confirmed on an emulator. One run reached
+  `session.commit()` without a crash, no installer screen appeared, and the
+  installed version did not change. Logcat showed `markAsSealed` logging
+  `ServiceNotFoundException: No service published for: persistent_data_block`.
+  That log line is the only evidence so far: whether the session sealed, whether
+  `UpdateResultReceiver` fired, and why no screen appeared are all unknown. Check
+  `dumpsys package installer` and the receiver before blaming the image.
+- `MainActivity` and `SettingsActivity` MUST call `WindowSpacing.apply` on their
+  root view. The app draws edge to edge, so a screen that skips it puts its
+  content under the status bar and the camera cutout.
+- The corpus is shuffled from a stored seed rather than stored as a list, so a
+  widget redraw after a reboot shows the same order.
+- Actions: `dev.cernoh.quotes.action.NEXT` from a tap,
+  `dev.cernoh.quotes.action.ROTATE` from the alarm. Both land in
+  `QuotesWidgetProvider.onReceive`.
 
 ## Styling
 
@@ -60,55 +119,6 @@ Gradle project under `android/`, Kotlin sources under
   drawables, so a colour change reaches both.
 - The card colour switch in the settings picks the light drawable and the
   `*_light` colours. Add a colour to both sets, or the light card breaks.
-- Settings live in `SettingsActivity`, one section each: rotation, sources,
-  card, order, and updates. Every change writes to `Prefs` and calls
-  `WidgetRenderer.updateAll` at once, so there is no Apply button.
-  `MainActivity` keeps only the card, the next-quote button, the add-widget
-  button, and the button that opens the settings.
-- Source selections are multi-choice lists built from the corpus, not free text.
-  An empty selection means the whole corpus, and a selection that matches nothing
-  falls back to the whole corpus.
-- `Updates` holds the whole update path: read the latest GitHub release, compare
-  versions, download the APK, and hand it to the system installer through
-  `PackageInstaller`. Never install anything directly, and never run the check in
-  the background: the user taps a button or nothing happens.
-- A private repository answers `404` to an anonymous release request, so
-  `Updates.check` reports a missing token rather than a network fault on 404.
-  Keep that distinction: it is the difference between "add a token" and "your
-  network is down".
-- The two permissions in the manifest have one purpose each: `INTERNET` for the
-  update check, `REQUEST_INSTALL_PACKAGES` for the installer handover. Adding a
-  third needs a reason in this file.
-- The Shizuku dependency is pinned to 12.2.0 on purpose. `Shizuku.newProcess` is
-  public there and private from 13.0, and the streamed `pm install` needs it.
-  Moving to 13.x means rewriting the install as a `bindUserService` service.
-  The API also brings `androidx.annotation`, the one androidx artifact in the
-  build; nothing else from androidx is allowed.
-- Shizuku is opt-in and MUST stay opt-in. `Prefs.shizukuInstall` decides, the
-  switch refuses to turn on unless the state is READY, and every path falls back
-  to `Updates.install`, the system installer.
-- `ShizukuInstaller.state()` MUST catch `Throwable`: without the Shizuku app the
-  library throws rather than returning a value, and an uncaught error there would
-  crash the settings screen.
-- The install streams the APK on standard input (`pm install -r -S <size>`), so
-  the app-private cache file never has to be readable by the shell user.
-- `PackageInstaller.Session.commit` needs a **mutable** `PendingIntent` on
-  Android 14 and later. An immutable one throws
-  `IllegalArgumentException: The commit() status receiver should come from a
-  mutable PendingIntent`, and the whole app dies. Found this way on
-  2026-09-19; `assembleDebug` and lint do not catch it.
-- The AOSP `default` emulator images cannot seal a PackageInstaller session:
-  `markAsSealed` fails with `No service published for: persistent_data_block`.
-  Test the system installer path on a Google APIs image or a real device, and do
-  not read that failure as an app fault.
-- `MainActivity` and `SettingsActivity` MUST call `WindowSpacing.apply` on their
-  root view. The app draws edge to edge, so a screen that skips it puts its
-  content under the status bar and the camera cutout.
-- The corpus is shuffled from a stored seed rather than stored as a list, so a
-  widget redraw after a reboot shows the same order.
-- Actions: `dev.cernoh.quotes.action.NEXT` from a tap,
-  `dev.cernoh.quotes.action.ROTATE` from the alarm. Both land in
-  `QuotesWidgetProvider.onReceive`.
 
 ## Work Guidance
 
@@ -117,8 +127,8 @@ Gradle project under `android/`, Kotlin sources under
 - Advancing happens only in `onReceive`, for `NEXT` and `ROTATE`.
 - Keep the alarm inexact. An exact repeating alarm needs a permission and wakes
   the device for a decoration.
-- The card is fixed dark. It sits over wallpaper, so it must not depend on the
-  system light or dark theme.
+- The card MUST NOT follow the system light or dark theme. Its colour is the
+  user's setting, because it sits over wallpaper.
 
 ## Verification
 
@@ -141,9 +151,11 @@ adb exec-out screencap -p > /tmp/app.png
   usually reports the displayed size instead.
 - `gradle copyCorpus` MUST fail when `data/quotes.json` breaks a rule. Break one
   rule on purpose when the task changes.
-- `gradle test` covers the size classes and the update logic. The live update
-  call cannot be tested without a token for the private repository: the anonymous
-  path returns the 404 message, which is the state to expect on a fresh install.
+- `gradle test` covers the size classes and the update logic. The repository is
+  public since 2026-09-19, so `releases/latest` answers `200` to an anonymous
+  request and the positive update path is testable without a token. The token
+  field matters again only if the repository returns to private, where the API
+  answers `404`.
 - A setting MUST reach the placed widget in one tap. Toggle *Light card* and
   check the home screen, not only the preview in the app.
 
