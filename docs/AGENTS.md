@@ -16,6 +16,10 @@ Owns the images that the top-level `README.md` shows.
 - An image MUST come from a real run of the app on a device or an emulator. A
   mock, a design tool drawing, or a screenshot of an older release is not
   allowed here.
+- Capture on an emulator dedicated to this project. Its home screen MUST carry
+  nothing but the stock launcher and this widget, so no other project appears in
+  the image. Check with `adb -s <serial> shell pm list packages -3`: the only
+  third-party package MUST be `dev.cernoh.quotes`.
 
 ## Work Guidance
 
