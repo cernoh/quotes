@@ -66,9 +66,9 @@ android {
         minSdk = 26
         targetSdk = 36
         // A release sets these from the command line:
-        //   gradle assembleRelease -PversionCode=4 -PversionName=0.4.0
-        versionCode = (project.findProperty("versionCode") as String?)?.toInt() ?: 3
-        versionName = (project.findProperty("versionName") as String?) ?: "0.3.0"
+        //   gradle assembleRelease -PversionCode=5 -PversionName=0.5.0
+        versionCode = (project.findProperty("versionCode") as String?)?.toInt() ?: 4
+        versionName = (project.findProperty("versionName") as String?) ?: "0.4.0"
     }
 
     buildTypes {
