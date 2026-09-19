@@ -32,8 +32,23 @@ class SettingsActivity : android.app.Activity() {
     private lateinit var checkButton: Button
     private lateinit var installButton: Button
     private lateinit var tokenField: EditText
+    private lateinit var shizukuState: TextView
+    private lateinit var shizukuPermission: Button
+    private lateinit var shizukuSwitch: Switch
+    private lateinit var installCachedButton: Button
 
     private var pending: Updates.Release? = null
+
+    /** Shizuku answers the permission request through this listener. */
+    private val shizukuPermissionResult =
+        rikka.shizuku.Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+            if (requestCode != SHIZUKU_REQUEST) return@OnRequestPermissionResultListener
+            val granted = grantResult == android.content.pm.PackageManager.PERMISSION_GRANTED
+            updateStatus.text = getString(
+                if (granted) R.string.shizuku_granted else R.string.shizuku_refused,
+            )
+            showShizuku()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,12 +68,27 @@ class SettingsActivity : android.app.Activity() {
         checkButton = findViewById(R.id.button_check)
         installButton = findViewById(R.id.button_install)
         tokenField = findViewById(R.id.field_token)
+        shizukuState = findViewById(R.id.shizuku_state)
+        shizukuPermission = findViewById(R.id.button_shizuku_permission)
+        shizukuSwitch = findViewById(R.id.switch_shizuku)
+        installCachedButton = findViewById(R.id.button_install_cached)
 
         setUpRotation()
         setUpSources()
         setUpCard()
         setUpOrder()
         setUpUpdates()
+        setUpShizuku()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showShizuku()
+    }
+
+    override fun onDestroy() {
+        rikka.shizuku.Shizuku.removeRequestPermissionResultListener(shizukuPermissionResult)
+        super.onDestroy()
     }
 
     // Rotation -------------------------------------------------------------
@@ -251,7 +281,7 @@ class SettingsActivity : android.app.Activity() {
                 runOnUiThread {
                     if (isFinishing) return@runOnUiThread
                     updateStatus.text = getString(R.string.update_installing)
-                    Updates.install(this, apk)
+                    installFile(apk)
                 }
             } catch (error: Exception) {
                 runOnUiThread {
@@ -264,6 +294,86 @@ class SettingsActivity : android.app.Activity() {
                 }
             }
         }.start()
+    }
+
+    /**
+     * Install a downloaded APK. With Shizuku ready and the switch on, the
+     * install runs as the shell user and shows no prompt. Otherwise the system
+     * installer takes over and asks the user.
+     */
+    private fun installFile(apk: java.io.File) {
+        val silent = Prefs.shizukuInstall(this) &&
+            ShizukuInstaller.state() == ShizukuInstaller.State.READY
+        updateStatus.text = getString(R.string.install_running)
+        Thread {
+            try {
+                if (silent) {
+                    val answer = ShizukuInstaller.install(apk)
+                    runOnUiThread {
+                        if (isFinishing) return@runOnUiThread
+                        updateStatus.text = getString(R.string.install_done, answer)
+                    }
+                } else {
+                    runOnUiThread {
+                        if (isFinishing) return@runOnUiThread
+                        Updates.install(this, apk)
+                    }
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    if (isFinishing) return@runOnUiThread
+                    updateStatus.text = getString(
+                        R.string.install_failed,
+                        error.message ?: error.javaClass.simpleName,
+                    )
+                    installButton.isEnabled = true
+                }
+            }
+        }.start()
+    }
+
+    // Automatic install ----------------------------------------------------
+
+    private fun setUpShizuku() {
+        rikka.shizuku.Shizuku.addRequestPermissionResultListener(shizukuPermissionResult)
+
+        shizukuSwitch.isChecked = Prefs.shizukuInstall(this)
+        shizukuSwitch.setOnCheckedChangeListener { _, checked ->
+            val ready = ShizukuInstaller.state() == ShizukuInstaller.State.READY
+            if (checked && !ready) {
+                shizukuSwitch.isChecked = false
+                updateStatus.text = getString(R.string.shizuku_switch_needs_ready)
+                return@setOnCheckedChangeListener
+            }
+            Prefs.setShizukuInstall(this, checked)
+        }
+
+        shizukuPermission.setOnClickListener {
+            if (!ShizukuInstaller.requestPermission(SHIZUKU_REQUEST)) {
+                updateStatus.text = getString(R.string.shizuku_off)
+            }
+        }
+
+        installCachedButton.setOnClickListener {
+            Updates.cachedUpdate(this)?.let { apk -> installFile(apk) }
+        }
+        showShizuku()
+    }
+
+    /** The state line, the permission button, and the switch follow Shizuku. */
+    private fun showShizuku() {
+        val state = ShizukuInstaller.state()
+        shizukuState.text = when (state) {
+            ShizukuInstaller.State.NOT_INSTALLED -> getString(R.string.shizuku_off)
+            ShizukuInstaller.State.NOT_RUNNING -> getString(R.string.shizuku_not_running)
+            ShizukuInstaller.State.DENIED -> getString(R.string.shizuku_needs_permission)
+            ShizukuInstaller.State.READY -> getString(R.string.shizuku_ready)
+        }
+        shizukuPermission.visibility =
+            if (state == ShizukuInstaller.State.DENIED) View.VISIBLE else View.GONE
+        shizukuSwitch.isEnabled = state == ShizukuInstaller.State.READY
+        installCachedButton.visibility =
+            if (Updates.cachedUpdate(this) != null) View.VISIBLE else View.GONE
     }
 
     // Shared ---------------------------------------------------------------
@@ -287,6 +397,8 @@ class SettingsActivity : android.app.Activity() {
     }
 
     companion object {
+        private const val SHIZUKU_REQUEST = 9001
+
         fun intent(context: android.content.Context): Intent =
             Intent(context, SettingsActivity::class.java)
     }

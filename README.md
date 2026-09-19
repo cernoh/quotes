@@ -67,6 +67,7 @@ There is no Apply button.
 | Show the work title | hide the work line for a plainer card |
 | Light card | a cream card with dark text, for a light home screen |
 | Shuffle the order | off walks the corpus in order |
+| Install updates without asking | installs an update through Shizuku, with no prompt. Turn it on only with Shizuku running and the permission granted |
 
 A selection that leaves nothing falls back to the whole corpus, so the widget can
 never come up empty.
@@ -88,6 +89,27 @@ token with read access to the releases into the *GitHub token* field and tap
 *Save*. Without a token the check reports that GitHub has no release, because a
 private repository answers `404` to an anonymous request. The token stays on the
 phone. If the repository becomes public, the field can stay empty.
+
+An interrupted update stays in the cache. The settings then offer *Install the
+downloaded update*, so a download is never wasted.
+
+### Without a prompt, through Shizuku
+
+[Shizuku](https://shizuku.rikka.app/) lets an app run a command as the shell
+user. An update then installs with no confirmation screen:
+
+1. Install Shizuku, then start its service. Shizuku can start from root, or from
+   the command it shows for a computer.
+2. Open the settings and find *Automatic install*. The line under it names the
+   state of Shizuku.
+3. Tap *Grant Shizuku permission* and allow it.
+4. Turn on *Install updates without asking*.
+
+The app then runs `pm install -r -S <size>` as the shell user and streams the APK
+into it, so the file never needs to be readable by anyone else.
+
+Shizuku is optional. Without it, the system installer handles every update, and
+the app behaves as it did before.
 
 The APK is debug signed, so Android accepts an update only while the releases
 come from the same signing key. Build future releases on this machine, or move

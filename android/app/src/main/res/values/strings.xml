@@ -52,6 +52,21 @@
     <string name="token_note">The app asks GitHub only when you tap the button. The token stays on this phone.</string>
     <string name="token_saved">Token saved.</string>
 
+    <string name="section_install">Automatic install</string>
+    <string name="switch_shizuku">Install updates without asking</string>
+    <string name="grant_shizuku">Grant Shizuku permission</string>
+    <string name="install_cached">Install the downloaded update</string>
+    <string name="install_running">Installing\u2026</string>
+    <string name="install_done">The install answered: %1$s</string>
+    <string name="install_failed">The install failed: %1$s</string>
+    <string name="shizuku_off">Shizuku is not installed. The system installer handles updates instead.</string>
+    <string name="shizuku_ready">Shizuku is ready. Updates install without a prompt.</string>
+    <string name="shizuku_needs_permission">Shizuku runs. This app needs your permission.</string>
+    <string name="shizuku_not_running">Shizuku is installed, but its service is not running.</string>
+    <string name="shizuku_granted">Permission granted.</string>
+    <string name="shizuku_refused">Permission refused.</string>
+    <string name="shizuku_switch_needs_ready">Turn Shizuku on first.</string>
+
     <string name="install_waiting">Waiting for your confirmation.</string>
     <string name="install_ok">Updated. Open the app again to see the new version.</string>
     <string name="install_cancelled">The install was cancelled.</string>

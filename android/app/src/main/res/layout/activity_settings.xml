@@ -184,5 +184,46 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/field_gap"
             android:text="@string/token_note" />
+
+        <!-- Automatic install -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_gap"
+            android:text="@string/section_install" />
+
+        <TextView
+            android:id="@+id/shizuku_state"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap" />
+
+        <Button
+            android:id="@+id/button_shizuku_permission"
+            style="@style/QuotesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/grant_shizuku"
+            android:visibility="gone" />
+
+        <Switch
+            android:id="@+id/switch_shizuku"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/switch_shizuku"
+            android:textColor="@color/quote_text" />
+
+        <Button
+            android:id="@+id/button_install_cached"
+            style="@style/QuotesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/install_cached"
+            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>

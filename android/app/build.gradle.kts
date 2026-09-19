@@ -50,8 +50,10 @@ android {
         applicationId = "dev.cernoh.quotes"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        // A release sets these from the command line:
+        //   gradle assembleRelease -PversionCode=2 -PversionName=0.2.0
+        versionCode = (project.findProperty("versionCode") as String?)?.toInt() ?: 1
+        versionName = (project.findProperty("versionName") as String?) ?: "0.1.0"
     }
 
     buildTypes {
@@ -76,8 +78,15 @@ tasks.named("preBuild") {
 }
 
 dependencies {
-    // Framework APIs only in the app. The tests need JUnit, and a real org.json
-    // because the android.jar copy is a stub that throws on the JVM.
+    // Shizuku runs a command as the shell or root user, so an update can install
+    // without the system installer prompt. Version 12.2.0 is deliberate: the
+    // public Shizuku.newProcess arrived in 12 and became private in 13, and the
+    // streamed `pm install` needs it.
+    implementation("dev.rikka.shizuku:api:12.2.0")
+    implementation("dev.rikka.shizuku:provider:12.2.0")
+
+    // The tests need JUnit, and a real org.json because the android.jar copy is
+    // a stub that throws on the JVM.
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20250517")
 }
