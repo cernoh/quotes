@@ -38,6 +38,48 @@ property.
 `shell.nix` composes the SDK from nixpkgs. It needs
 `android_sdk.accept_license = true`, which the file sets.
 
+## Release signing
+
+A debug APK can never update another debug APK: every machine generates its own
+debug key, so Android refuses with
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE`. Real releases use one key that is kept.
+
+1. Generate the key once, and keep it outside the repository:
+
+```sh
+keytool -genkeypair -v -keystore ~/.android-keys/quotes-release.jks \
+  -alias quotes -keyalg RSA -keysize 4096 -validity 10000
+```
+
+2. Copy `android/keystore.properties.example` to `android/keystore.properties`
+   and fill it in. That file is gitignored.
+3. Build and check the signature:
+
+```sh
+cd android
+gradle assembleRelease bundleRelease \
+  -Pandroid.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
+$ANDROID_HOME/build-tools/36.0.0/apksigner verify --print-certs \
+  app/build/outputs/apk/release/app-release.apk
+```
+
+**Back the keystore up.** Android accepts an update only from the same key. Lose
+it and the app can never be updated again; every user must uninstall first.
+
+Without `android/keystore.properties`, `assembleRelease` still builds and writes
+`app-release-unsigned.apk`, which is what F-Droid wants.
+
+## F-Droid
+
+F-Droid builds from source and signs with its own key, so it needs no keystore
+from this repository. `fdroid/dev.cernoh.quotes.yml` holds the metadata: the
+build recipe, the licence, and the version policy. To submit it, fork
+[fdroiddata](https://gitlab.com/fdroid/fdroiddata), copy the file to
+`metadata/dev.cernoh.quotes.yml`, and open a merge request.
+
+An F-Droid build and a sideloaded build can never replace each other, because
+the signatures differ. Choose one route per device.
+
 ## The widget
 
 - **Add it**: open the app and tap *Add widget*, or long-press the home screen,
@@ -111,11 +153,11 @@ into it, so the file never needs to be readable by anyone else.
 Shizuku is optional. Without it, the system installer handles every update, and
 the app behaves as it did before.
 
-The APK is debug signed, so Android accepts an update only while the releases
-come from the same signing key. Build future releases on this machine, or move
-`~/.android/debug.keystore` with the project. If the keys differ, Android
-refuses the update, and the app explains that the installed copy must be removed
-first.
+The APK is signed with the project release key. Android accepts an update only
+from the same key, so keep `~/.android-keys/quotes-release.jks` safe. A device
+that carries an older debug-signed build must uninstall it once before the first
+release-signed install, because debug signatures never match a release
+signature.
 
 ## The corpus
 
@@ -157,5 +199,6 @@ android/                          the app and the widget
 shell.nix                         the Android toolchain from nixpkgs
 ```
 
-The typeface is EB Garamond by Georg Duffner and Octavio Pardo, used under the
-SIL Open Font License 1.1.
+The app is MIT licensed; see `LICENSE`. The typeface is EB Garamond by Georg
+Duffner and Octavio Pardo, used under the SIL Open Font License 1.1. Quotes come
+from English Wikiquote, which publishes under CC BY-SA 4.0.
