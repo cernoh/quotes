@@ -134,7 +134,7 @@ object Updates {
     /** Download the APK of [release] into the cache. */
     fun download(context: Context, release: Release): File {
         val assetId = release.apkId ?: error("the release carries no APK")
-        val target = File(context.cacheDir, release.apkName ?: "update.apk")
+        val target = updateFile(context)
         if (target.exists()) target.delete()
         // The browser_download_url of a private repository needs an
         // authenticated web session, so download through the API asset endpoint
@@ -148,6 +148,13 @@ object Updates {
         check(target.length() > 0) { "the download is empty" }
         return target
     }
+
+    /** Where a download lands. The file stays, so an interrupted update can be finished. */
+    fun updateFile(context: Context): File = File(context.cacheDir, "update.apk")
+
+    /** The downloaded update, when one is waiting to be installed. */
+    fun cachedUpdate(context: Context): File? =
+        updateFile(context).takeIf { it.isFile && it.length() > 0 }
 
     /** The API address of one release asset. */
     fun assetUrl(assetId: Long): String =
@@ -171,7 +178,15 @@ object Updates {
                 }
             }
             val result = Intent(context, UpdateResultReceiver::class.java)
-            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            // Android 14 and later reject an immutable PendingIntent here: the
+            // system writes the install result into it, so it MUST be mutable.
+            // The receiver is not exported, so nothing else can reach it.
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    PendingIntent.FLAG_MUTABLE
+                } else {
+                    0
+                }
             session.commit(PendingIntent.getBroadcast(context, 51, result, flags).intentSender)
         }
     }

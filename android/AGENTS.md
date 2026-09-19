@@ -79,6 +79,28 @@ Gradle project under `android/`, Kotlin sources under
 - The two permissions in the manifest have one purpose each: `INTERNET` for the
   update check, `REQUEST_INSTALL_PACKAGES` for the installer handover. Adding a
   third needs a reason in this file.
+- The Shizuku dependency is pinned to 12.2.0 on purpose. `Shizuku.newProcess` is
+  public there and private from 13.0, and the streamed `pm install` needs it.
+  Moving to 13.x means rewriting the install as a `bindUserService` service.
+  The API also brings `androidx.annotation`, the one androidx artifact in the
+  build; nothing else from androidx is allowed.
+- Shizuku is opt-in and MUST stay opt-in. `Prefs.shizukuInstall` decides, the
+  switch refuses to turn on unless the state is READY, and every path falls back
+  to `Updates.install`, the system installer.
+- `ShizukuInstaller.state()` MUST catch `Throwable`: without the Shizuku app the
+  library throws rather than returning a value, and an uncaught error there would
+  crash the settings screen.
+- The install streams the APK on standard input (`pm install -r -S <size>`), so
+  the app-private cache file never has to be readable by the shell user.
+- `PackageInstaller.Session.commit` needs a **mutable** `PendingIntent` on
+  Android 14 and later. An immutable one throws
+  `IllegalArgumentException: The commit() status receiver should come from a
+  mutable PendingIntent`, and the whole app dies. Found this way on
+  2026-09-19; `assembleDebug` and lint do not catch it.
+- The AOSP `default` emulator images cannot seal a PackageInstaller session:
+  `markAsSealed` fails with `No service published for: persistent_data_block`.
+  Test the system installer path on a Google APIs image or a real device, and do
+  not read that failure as an app fault.
 - `MainActivity` and `SettingsActivity` MUST call `WindowSpacing.apply` on their
   root view. The app draws edge to edge, so a screen that skips it puts its
   content under the status bar and the camera cutout.

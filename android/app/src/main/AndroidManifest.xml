@@ -48,6 +48,15 @@
         <receiver
             android:name=".UpdateResultReceiver"
             android:exported="false" />
+
+        <!-- Shizuku hands the binder to this provider. Required by its API. -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 
 </manifest>

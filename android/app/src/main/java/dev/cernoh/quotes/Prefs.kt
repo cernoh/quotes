@@ -97,6 +97,16 @@ object Prefs {
         prefs(context).edit().putString("githubToken", token.trim()).apply()
     }
 
+    // Installation ---------------------------------------------------------
+
+    /** True when the user lets Shizuku install updates without a prompt. */
+    fun shizukuInstall(context: Context): Boolean =
+        prefs(context).getBoolean("shizukuInstall", false)
+
+    fun setShizukuInstall(context: Context, on: Boolean) {
+        prefs(context).edit().putBoolean("shizukuInstall", on).apply()
+    }
+
     // Position -------------------------------------------------------------
 
     /** Start the cycle again, with a fresh order. */
