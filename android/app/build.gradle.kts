@@ -76,5 +76,6 @@ tasks.named("preBuild") {
 }
 
 dependencies {
-    // Framework APIs only. No androidx, so the build needs nothing but the SDK.
+    // Framework APIs only in the app. The tests use JUnit for the size classes.
+    testImplementation("junit:junit:4.13.2")
 }

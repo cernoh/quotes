@@ -24,6 +24,16 @@ class QuotesWidgetProvider : AppWidgetProvider() {
         AlarmScheduler.schedule(context)
     }
 
+    /** The user resized the widget, so the card has to be measured again. */
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        manager: AppWidgetManager,
+        widgetId: Int,
+        newOptions: android.os.Bundle?,
+    ) {
+        WidgetRenderer.update(context, manager, widgetId)
+    }
+
     override fun onDisabled(context: Context) {
         AlarmScheduler.cancel(context)
     }

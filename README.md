@@ -40,6 +40,9 @@ property.
 
 - **Add it**: open the app and tap *Add widget*, or long-press the home screen,
   open *Widgets*, and pick *Quote of the moment*.
+- **Size**: the card adapts to the cell you give it. A small cell drops to
+  smaller text, fewer lines, and no rule, so the author stays on the card. A tall
+  cell takes larger text and more lines.
 - **Tap the quote**: show the next quote.
 - **Tap the author**: open the app.
 - **Rotation**: every 15, 30, 60, 120 or 240 minutes. An inexact alarm drives

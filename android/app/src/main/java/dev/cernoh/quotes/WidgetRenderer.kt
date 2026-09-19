@@ -5,11 +5,15 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 
-/** Draws the card into every placed widget. */
+/** Draws the card into every placed widget, at the size the launcher gave it. */
 object WidgetRenderer {
+    private const val TAG = "quotes"
     fun updateAll(context: Context) {
         val manager = AppWidgetManager.getInstance(context) ?: return
         val ids = manager.getAppWidgetIds(ComponentName(context, QuotesWidgetProvider::class.java))
@@ -19,6 +23,8 @@ object WidgetRenderer {
     fun update(context: Context, manager: AppWidgetManager, widgetId: Int) {
         val quote = Prefs.current(context)
         val views = RemoteViews(context.packageName, R.layout.widget_card)
+
+        applyTier(context, views, manager, widgetId)
 
         views.setTextViewText(R.id.quote_text, "\u201C${quote.text}\u201D")
         views.setTextViewText(R.id.quote_author, quote.author.uppercase())
@@ -39,6 +45,54 @@ object WidgetRenderer {
         views.setOnClickPendingIntent(R.id.quote_attribution, openIntent(context))
 
         manager.updateAppWidget(widgetId, views)
+    }
+
+    /**
+     * Size the card to the cell footprint. A 3 by 2 placement gets less text at
+     * a smaller size, or the quote alone fills the card and the attribution
+     * disappears.
+     */
+    private fun applyTier(
+        context: Context,
+        views: RemoteViews,
+        manager: AppWidgetManager,
+        widgetId: Int,
+    ) {
+        val options = manager.getAppWidgetOptions(widgetId)
+        val portrait = context.resources.configuration.orientation ==
+            Configuration.ORIENTATION_PORTRAIT
+        val (widthDp, heightDp) = WidgetSizing.currentSize(
+            portrait = portrait,
+            minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+            minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT),
+            maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH),
+            maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT),
+        )
+        val tier = WidgetSizing.tierFor(widthDp, heightDp)
+        Log.i(
+            TAG,
+            "widget $widgetId is ${widthDp}x${heightDp}dp: ${tier.quoteSizeSp}sp, " +
+                "maxLines ${tier.maxLines}, padding ${tier.paddingDp}dp",
+        )
+
+        views.setTextViewTextSize(
+            R.id.quote_text, TypedValue.COMPLEX_UNIT_SP, tier.quoteSizeSp,
+        )
+        views.setTextViewTextSize(
+            R.id.quote_author, TypedValue.COMPLEX_UNIT_SP, tier.attributionSizeSp,
+        )
+        views.setTextViewTextSize(
+            R.id.quote_work, TypedValue.COMPLEX_UNIT_SP, tier.attributionSizeSp,
+        )
+        views.setInt(R.id.quote_text, "setMaxLines", tier.maxLines)
+
+        val padding = (tier.paddingDp * context.resources.displayMetrics.density).toInt()
+        views.setViewPadding(R.id.quote_card, padding, padding, padding, padding)
+
+        views.setViewVisibility(
+            R.id.quote_rule, if (tier.showRule) View.VISIBLE else View.GONE,
+        )
+        if (!tier.showWork) views.setViewVisibility(R.id.quote_work, View.GONE)
     }
 
     private fun nextIntent(context: Context): PendingIntent = PendingIntent.getBroadcast(
