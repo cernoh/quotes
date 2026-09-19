@@ -22,10 +22,11 @@ SOFTWARE.
 
 ---
 
-Third-party material:
+Third-party material — this MIT grant covers the code and the layout only:
 
 - EB Garamond, by Georg Duffner and Octavio Pardo, is bundled in the app and is
-  used under the SIL Open Font License 1.1. Its licence text is in
-  `android/app/src/main/res/font/` alongside the font files.
-- The quote corpus comes from English Wikiquote, which publishes under
-  CC BY-SA 4.0. Each corpus entry records the page it came from.
+  used under the SIL Open Font License 1.1.
+- The bundled quotations are NOT covered by this licence. Sixteen of the
+  twenty-two authors are in copyright, in the work or in the English
+  translation. They are quotations from published books, kept to a handful of
+  lines each, with the source recorded per quote. See `data/AGENTS.md`.
