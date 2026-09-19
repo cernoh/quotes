@@ -17,3 +17,8 @@ android/local.properties
 android/app/src/main/assets/quotes.json
 # Emulator and SDK state created inside the checkout by shell.nix
 .android/
+
+# The release keystore and its passwords stay out of the repository.
+android/keystore.properties
+*.jks
+*.keystore

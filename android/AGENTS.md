@@ -90,6 +90,18 @@ Gradle project under `android/`, Kotlin sources under
   That log line is the only evidence so far: whether the session sealed, whether
   `UpdateResultReceiver` fired, and why no screen appeared are all unknown. Check
   `dumpsys package installer` and the receiver before blaming the image.
+- Releases MUST be signed with the project release key, never with a debug key.
+  Two debug keys never match, so a debug-signed release cannot update another.
+  That failure cost a real user an
+  `INSTALL_FAILED_UPDATE_INCOMPATIBLE` on 2026-09-19.
+- The release keystore lives outside the repository, and
+  `android/keystore.properties` is gitignored. `keystore.properties.example` is
+  the template. Never commit either secret.
+- `assembleRelease` MUST keep working with no keystore: F-Droid builds from
+  source and signs with its own key, and it needs the unsigned APK. Check that
+  path when the signing block changes.
+- `fdroid/dev.cernoh.quotes.yml` is the F-Droid metadata. It names the licence,
+  the build recipe, and the version policy; keep it in step with the release.
 - `MainActivity` and `SettingsActivity` MUST call `WindowSpacing.apply` on their
   root view. The app draws edge to edge, so a screen that skips it puts its
   content under the status bar and the camera cutout.

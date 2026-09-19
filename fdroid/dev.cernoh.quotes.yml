@@ -1,0 +1,48 @@
+# F-Droid build metadata for cernoh/quotes.
+#
+# F-Droid builds this app from source and signs it with its own key, so the
+# release keystore is not involved. The Gradle build tolerates a missing
+# android/keystore.properties and produces an unsigned APK, which is what
+# F-Droid wants.
+#
+# To submit: fork https://gitlab.com/fdroid/fdroiddata, copy this file to
+# metadata/dev.cernoh.quotes.yml, and open a merge request.
+#
+# After F-Droid signs the first release, an F-Droid install and a sideloaded
+# install can never replace each other: the signatures differ. Pick one route.
+
+Categories:
+  - Reading
+License: MIT
+AuthorName: cernoh
+AuthorEmail: cernoh@users.noreply.github.com
+SourceCode: https://github.com/cernoh/quotes
+IssueTracker: https://github.com/cernoh/quotes/issues
+Changelog: https://github.com/cernoh/quotes/releases
+
+AutoName: Quotes
+
+RepoType: git
+Repo: https://github.com/cernoh/quotes
+
+Builds:
+  - versionName: 0.3.0
+    versionCode: 3
+    commit: v0.3
+    subdir: android
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9.]+$
+CurrentVersion: 0.3.0
+CurrentVersionCode: 3
+
+# Two permissions, one purpose each. INTERNET serves the update check, which
+# reads the GitHub releases only when the user taps a button; no check runs in
+# the background. REQUEST_INSTALL_PACKAGES lets the app hand a downloaded update
+# to the system installer. The Shizuku provider adds
+# INTERACT_ACROSS_USERS_FULL, which hands Shizuku's binder to this app; Shizuku
+# is optional and every update falls back to the system installer without it.
+#
+# Anti-features: none. The app carries no ads, no tracking, and no telemetry.

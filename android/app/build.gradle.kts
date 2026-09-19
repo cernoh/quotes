@@ -1,7 +1,22 @@
 import groovy.json.JsonSlurper
+import java.util.Properties
 
 plugins {
     id("com.android.application")
+}
+
+/**
+ * Release signing. The keystore and its passwords live OUTSIDE the repository:
+ * `android/keystore.properties` is gitignored, and the template is
+ * `android/keystore.properties.example`. Losing the keystore means this app can
+ * never be updated again, so back it up.
+ *
+ * The debug build type keeps the standard debug key, which is fine for a test
+ * install and useless for an update: two debug keys never match.
+ */
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.isFile) file.inputStream().use { load(it) }
 }
 
 /**
@@ -51,14 +66,32 @@ android {
         minSdk = 26
         targetSdk = 36
         // A release sets these from the command line:
-        //   gradle assembleRelease -PversionCode=3 -PversionName=0.3.0
-        versionCode = (project.findProperty("versionCode") as String?)?.toInt() ?: 2
-        versionName = (project.findProperty("versionName") as String?) ?: "0.2.0"
+        //   gradle assembleRelease -PversionCode=4 -PversionName=0.4.0
+        versionCode = (project.findProperty("versionCode") as String?)?.toInt() ?: 3
+        versionName = (project.findProperty("versionName") as String?) ?: "0.3.0"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            if (keystoreProperties.isNotEmpty()) {
+                signingConfig = signingConfigs.create("release") {
+                    storeFile = file(keystoreProperties.getProperty("storeFile"))
+                    storePassword = keystoreProperties.getProperty("storePassword")
+                    keyAlias = keystoreProperties.getProperty("keyAlias")
+                    keyPassword = keystoreProperties.getProperty("keyPassword")
+                    // v1 and v2 cover Android 8 and later; v3 adds key rotation,
+                    // which this app does not use.
+                    enableV1Signing = true
+                    enableV2Signing = true
+                    enableV3Signing = true
+                }
+            }
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 
