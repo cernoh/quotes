@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padding from the screen edges, before the window insets are added. -->
+    <dimen name="screen_padding">24dp</dimen>
+    <!-- Between the card and the buttons. -->
+    <dimen name="block_gap">20dp</dimen>
+    <!-- Between two sections of the settings page. -->
+    <dimen name="section_gap">28dp</dimen>
+    <!-- Between a label and its control. -->
+    <dimen name="field_gap">8dp</dimen>
+    <dimen name="card_preview_height">260dp</dimen>
+</resources>

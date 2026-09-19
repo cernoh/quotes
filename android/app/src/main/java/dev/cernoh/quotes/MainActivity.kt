@@ -33,6 +33,7 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        WindowSpacing.apply(this, findViewById(R.id.root))
 
         quoteText = findViewById(R.id.quote_text)
         authorText = findViewById(R.id.quote_author)
