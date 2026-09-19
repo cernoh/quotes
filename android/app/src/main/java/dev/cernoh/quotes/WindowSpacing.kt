@@ -20,25 +20,31 @@ object WindowSpacing {
     fun apply(activity: Activity, root: View) {
         val base = activity.resources.getDimensionPixelSize(R.dimen.screen_padding)
         root.setOnApplyWindowInsetsListener { view, insets ->
-            val bars = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                insets.getInsets(
+            // android.graphics.Insets arrived in API 29, and this branch also
+            // runs on API 26, 27 and 28, so carry four plain numbers.
+            val left: Int
+            val top: Int
+            val right: Int
+            val bottom: Int
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val bars = insets.getInsets(
                     WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout(),
                 )
+                left = bars.left
+                top = bars.top
+                right = bars.right
+                bottom = bars.bottom
             } else {
                 @Suppress("DEPRECATION")
-                android.graphics.Insets.of(
-                    insets.systemWindowInsetLeft,
-                    insets.systemWindowInsetTop,
-                    insets.systemWindowInsetRight,
-                    insets.systemWindowInsetBottom,
-                )
+                left = insets.systemWindowInsetLeft
+                @Suppress("DEPRECATION")
+                top = insets.systemWindowInsetTop
+                @Suppress("DEPRECATION")
+                right = insets.systemWindowInsetRight
+                @Suppress("DEPRECATION")
+                bottom = insets.systemWindowInsetBottom
             }
-            view.setPadding(
-                base + bars.left,
-                base + bars.top,
-                base + bars.right,
-                base + bars.bottom,
-            )
+            view.setPadding(base + left, base + top, base + right, base + bottom)
             insets
         }
         root.requestApplyInsets()

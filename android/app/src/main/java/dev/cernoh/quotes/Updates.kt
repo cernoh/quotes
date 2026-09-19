@@ -31,7 +31,8 @@ object Updates {
         val tag: String,
         val name: String,
         val notes: String,
-        val apkUrl: String?,
+        /** The API id of the APK asset, used to download it from a private repository. */
+        val apkId: Long?,
         val apkName: String?,
     )
 
@@ -87,15 +88,16 @@ object Updates {
     fun parseRelease(body: String): Release? = try {
         val json = JSONObject(body)
         val assets = json.optJSONArray("assets")
-        var url: String? = null
+        var id: Long? = null
         var name: String? = null
         if (assets != null) {
             for (index in 0 until assets.length()) {
                 val asset = assets.getJSONObject(index)
                 val assetName = asset.optString("name")
-                if (assetName.endsWith(".apk")) {
+                val assetId = asset.optLong("id", 0L)
+                if (assetName.endsWith(".apk") && assetId > 0L) {
                     name = assetName
-                    url = asset.optString("browser_download_url")
+                    id = assetId
                     break
                 }
             }
@@ -104,7 +106,7 @@ object Updates {
             tag = json.optString("tag_name"),
             name = json.optString("name"),
             notes = json.optString("body"),
-            apkUrl = url,
+            apkId = id,
             apkName = name,
         )
     } catch (error: Exception) {
@@ -131,10 +133,13 @@ object Updates {
 
     /** Download the APK of [release] into the cache. */
     fun download(context: Context, release: Release): File {
-        val url = release.apkUrl ?: error("the release carries no APK")
+        val assetId = release.apkId ?: error("the release carries no APK")
         val target = File(context.cacheDir, release.apkName ?: "update.apk")
         if (target.exists()) target.delete()
-        val connection = open(url, Prefs.githubToken(context), binary = true)
+        // The browser_download_url of a private repository needs an
+        // authenticated web session, so download through the API asset endpoint
+        // with the token. GitHub answers with a redirect to a signed address.
+        val connection = open(assetUrl(assetId), Prefs.githubToken(context), binary = true)
         val code = connection.responseCode
         check(code == 200) { "the download answered $code" }
         connection.inputStream.use { input ->
@@ -143,6 +148,10 @@ object Updates {
         check(target.length() > 0) { "the download is empty" }
         return target
     }
+
+    /** The API address of one release asset. */
+    fun assetUrl(assetId: Long): String =
+        "https://api.github.com/repos/$OWNER/$REPO/releases/assets/$assetId"
 
     /**
      * Hand the APK to the system installer. The user sees the normal install

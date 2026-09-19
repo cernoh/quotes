@@ -22,10 +22,12 @@ class UpdatesTest {
           "prerelease": false,
           "assets": [
             {
+              "id": 128849019,
               "name": "quotes-0.2-debug.apk",
               "browser_download_url": "https://github.com/cernoh/quotes/releases/download/v0.2/quotes-0.2-debug.apk"
             },
             {
+              "id": 128849020,
               "name": "source.tar.gz",
               "browser_download_url": "https://github.com/cernoh/quotes/archive/v0.2.tar.gz"
             }
@@ -40,19 +42,36 @@ class UpdatesTest {
         assertEquals("v0.2", release!!.tag)
         assertEquals("Quotes v0.2", release.name)
         assertEquals("Second release.", release.notes)
+        assertEquals(128849019L, release.apkId)
+    }
+
+    @Test
+    fun downloadsThroughTheApiAssetEndpoint() {
+        // The browser address of a private repository needs a signed-in web
+        // session. The API address works with the token.
         assertEquals(
-            "https://github.com/cernoh/quotes/releases/download/v0.2/quotes-0.2-debug.apk",
-            release.apkUrl,
+            "https://api.github.com/repos/cernoh/quotes/releases/assets/128849019",
+            Updates.assetUrl(128849019L),
         )
     }
 
     @Test
     fun parsesAReleaseWithoutAnApk() {
         val release = Updates.parseRelease(
-            """{"tag_name": "v0.2", "assets": [{"name": "source.zip"}]}""",
+            """{"tag_name": "v0.2", "assets": [{"id": 7, "name": "source.zip"}]}""",
         )
         assertNotNull(release)
-        assertNull(release!!.apkUrl)
+        assertNull(release!!.apkId)
+    }
+
+    @Test
+    fun refusesAnAssetWithoutAnId() {
+        // An asset with no id cannot be fetched from the API endpoint.
+        val release = Updates.parseRelease(
+            """{"tag_name": "v0.2", "assets": [{"name": "quotes-0.2.apk"}]}""",
+        )
+        assertNotNull(release)
+        assertNull(release!!.apkId)
     }
 
     @Test

@@ -107,6 +107,17 @@ object WidgetSizing {
         maxHeight: Int,
     ): Pair<Int, Int> = if (portrait) minWidth to maxHeight else maxWidth to minHeight
 
+    /**
+     * The size to draw for. A launcher that has not filled the options yet
+     * reports zero, and zero would select the smallest card in a large cell, so
+     * each unset number falls back to the size the provider declares.
+     */
+    fun effectiveSize(
+        reported: Pair<Int, Int>,
+        declared: Pair<Int, Int>,
+    ): Pair<Int, Int> = (if (reported.first > 0) reported.first else declared.first) to
+        (if (reported.second > 0) reported.second else declared.second)
+
     /** The size class for a placed width and height in dp. */
     fun sizeFor(widthDp: Int, heightDp: Int): WidgetSize {
         val byHeight = when {
@@ -148,4 +159,12 @@ object WidgetSizing {
         val lines = room.toInt().coerceIn(1, tier.maxLines)
         return tier.copy(maxLines = lines)
     }
+
+    /**
+     * Whether the work title belongs on the card. The rule lives here, and not
+     * in the renderer, because a renderer that decides it twice has drawn the
+     * work line on a card whose height never budgeted for it.
+     */
+    fun showsWork(tier: WidgetTier, quoteHasWork: Boolean, settingAllows: Boolean): Boolean =
+        quoteHasWork && settingAllows && tier.showWork
 }

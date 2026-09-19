@@ -24,17 +24,24 @@ object WidgetRenderer {
         val quote = Prefs.current(context)
         val views = RemoteViews(context.packageName, R.layout.widget_card)
 
-        applyTier(context, views, manager, widgetId)
+        // The size decides whether the card has room for the work title, so the
+        // tier comes first and the work block below obeys it.
+        val tier = applyTier(context, views, manager, widgetId)
 
         views.setTextViewText(R.id.quote_text, "\u201C${quote.text}\u201D")
         views.setTextViewText(R.id.quote_author, quote.author.uppercase())
 
         val work = quote.work
-        if (work.isNullOrBlank()) {
-            views.setViewVisibility(R.id.quote_work, View.GONE)
-        } else {
+        val drawWork = WidgetSizing.showsWork(
+            tier = tier,
+            quoteHasWork = !work.isNullOrBlank(),
+            settingAllows = Prefs.showWork(context),
+        )
+        if (drawWork) {
             views.setTextViewText(R.id.quote_work, work)
             views.setViewVisibility(R.id.quote_work, View.VISIBLE)
+        } else {
+            views.setViewVisibility(R.id.quote_work, View.GONE)
         }
 
         // A tap anywhere on the quote moves on; the attribution opens the app.
@@ -50,23 +57,30 @@ object WidgetRenderer {
     /**
      * Size the card to the cell footprint. A 3 by 2 placement gets less text at
      * a smaller size, or the quote alone fills the card and the attribution
-     * disappears.
+     * disappears. Returns the tier it used, so the caller can obey it.
      */
     private fun applyTier(
         context: Context,
         views: RemoteViews,
         manager: AppWidgetManager,
         widgetId: Int,
-    ) {
+    ): WidgetTier {
         val options = manager.getAppWidgetOptions(widgetId)
         val portrait = context.resources.configuration.orientation ==
             Configuration.ORIENTATION_PORTRAIT
-        val (widthDp, heightDp) = WidgetSizing.currentSize(
-            portrait = portrait,
-            minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
-            minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT),
-            maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH),
-            maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT),
+        val declared = manager.getAppWidgetInfo(widgetId)
+        val (widthDp, heightDp) = WidgetSizing.effectiveSize(
+            reported = WidgetSizing.currentSize(
+                portrait = portrait,
+                minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+                minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT),
+                maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH),
+                maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT),
+            ),
+            // A launcher that has not filled the options yet reports zero. Fall
+            // back to the size the provider declares, or the card draws small in
+            // a large cell.
+            declared = (declared?.minWidth ?: 0) to (declared?.minHeight ?: 0),
         )
         val tier = WidgetSizing.tierFor(widthDp, heightDp)
         Log.i(
@@ -115,10 +129,7 @@ object WidgetRenderer {
             R.id.quote_rule, "setBackgroundColor",
             context.getColor(if (light) R.color.quote_rule_light else R.color.quote_rule),
         )
-
-        if (!tier.showWork || !Prefs.showWork(context)) {
-            views.setViewVisibility(R.id.quote_work, View.GONE)
-        }
+        return tier
     }
 
     private fun nextIntent(context: Context): PendingIntent = PendingIntent.getBroadcast(
