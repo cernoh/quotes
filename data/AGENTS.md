@@ -9,6 +9,19 @@ widget.
 
 `quotes.json` and this document. The widget reads the file and never writes it.
 
+## Rights
+
+- The 134 quotes come from 22 authors. 16 of those authors are in copyright,
+  either in the work or in the English translation: Murakami, Mishima, Dazai,
+  Baldwin, Beckett, Hemingway, Cioran, Hesse, Camus, Rilke, Woolf, Weil,
+  Kierkegaard, Nietzsche, Kafka, and Sōseki (translation).
+- Only Dostoevsky, Tolstoy, Chekhov, Turgenev, Marcus Aurelius, and Seneca are
+  safely public domain.
+- This means the corpus MUST NOT go to a store that checks bundled content
+  (F-Droid main repository). It decided not to, on 2026-09-19.
+- Add every new quote to this audit: a quote nobody can account for breaks a
+  later redistribution decision.
+
 ## Local Contracts
 
 - The file is an object: `{"version": 1, "note": "...", "quotes": [...]}`.

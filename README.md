@@ -69,13 +69,14 @@ it and the app can never be updated again; every user must uninstall first.
 Without `android/keystore.properties`, `assembleRelease` still builds and writes
 `app-release-unsigned.apk`, which is what F-Droid wants.
 
-## F-Droid
+## Not on F-Droid
 
-F-Droid builds from source and signs with its own key, so it needs no keystore
-from this repository. `fdroid/dev.cernoh.quotes.yml` holds the metadata: the
-build recipe, the licence, and the version policy. To submit it, fork
-[fdroiddata](https://gitlab.com/fdroid/fdroiddata), copy the file to
-`metadata/dev.cernoh.quotes.yml`, and open a merge request.
+F-Droid's inclusion policy requires that all assets be free or public domain and
+that the app not infringe third-party copyright. The corpus bundles quotes from
+16 authors whose works or English translations are in copyright, so the app
+cannot ship there without dropping most of the authors it exists for. The app
+updates itself from the GitHub releases instead, and you can add this repository
+to the F-Droid client if you build and sign it yourself.
 
 An F-Droid build and a sideloaded build can never replace each other, because
 the signatures differ. Choose one route per device.
