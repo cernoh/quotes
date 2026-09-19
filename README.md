@@ -9,6 +9,11 @@ The card is set in EB Garamond, which ships inside the APK. It shows the quote,
 the author in letterspaced capitals, and the work in italics. Tap the quote for
 the next one; tap the attribution to open the app.
 
+<p>
+  <img src="docs/screenshots/app.png" width="360" alt="The app showing a quote by Osamu Dazai from No Longer Human, with buttons for the next quote and for adding the widget">
+  <img src="docs/screenshots/home.png" width="360" alt="The same card as a widget on the Android home screen">
+</p>
+
 The app has no internet permission. The corpus is compiled into the APK, so the
 widget works with the phone offline.
 
