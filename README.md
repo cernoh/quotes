@@ -10,12 +10,14 @@ the author in letterspaced capitals, and the work in italics. Tap the quote for
 the next one; tap the attribution to open the app.
 
 <p>
-  <img src="docs/screenshots/app.png" width="360" alt="The app showing a quote by Osamu Dazai from No Longer Human, with buttons for the next quote and for adding the widget">
-  <img src="docs/screenshots/home.png" width="360" alt="The same card as a widget on the Android home screen">
+  <img src="docs/screenshots/app.png" width="250" alt="The app showing a quote by Osamu Dazai from No Longer Human, with buttons for the next quote, for adding the widget, and for the settings">
+  <img src="docs/screenshots/settings.png" width="250" alt="The settings page: rotation, sources, card, order, and updates">
+  <img src="docs/screenshots/home.png" width="250" alt="The same card as a widget on the Android home screen">
 </p>
 
-The app has no internet permission. The corpus is compiled into the APK, so the
-widget works with the phone offline.
+The app asks for the internet permission for one thing only: the update check.
+Nothing else uses the network, no check runs in the background, and the corpus is
+compiled into the APK, so the widget works with the phone offline.
 
 ## Build and install
 
@@ -42,24 +44,56 @@ property.
   open *Widgets*, and pick *Quote of the moment*.
 - **Size**: the card adapts to the cell you give it. A small cell drops to
   smaller text, fewer lines, and no rule, so the author stays on the card. A tall
-  cell takes larger text and more lines.
+  cell takes larger text and more lines. A quote too long for the cell is cut
+  with an ellipsis.
 - **Tap the quote**: show the next quote.
 - **Tap the author**: open the app.
-- **Rotation**: every 15, 30, 60, 120 or 240 minutes. An inexact alarm drives
-  it, so the system may delay an update a little to save power. Android does not
-  fire repeating alarms more often than 15 minutes; a smaller number is clamped.
+- **Rotation**: every 15, 30, 60, 120 or 240 minutes, or never. An inexact alarm
+  drives it, so the system may delay an update a little to save power. Android
+  does not fire repeating alarms more often than 15 minutes; a smaller number is
+  clamped.
 
 ## Settings
 
+Every change applies at once, to the card in the app and to every placed widget.
+There is no Apply button.
+
 | Setting | Effect |
 | --- | --- |
-| Rotate every | how long each quote stays |
-| Only these authors | case-insensitive match on the author name, for example `Dostoevsky` |
-| Only these works | case-insensitive match on the work title, for example `White Nights` |
+| Rotate every | `Never, only when I tap`, or 15, 30, 60, 120 or 240 minutes |
+| Authors | pick the authors to draw from. Empty means all of them |
+| Works | pick the works to draw from. Empty means all of them |
+| Text size | 80 to 140 percent, on top of the size the widget was given |
+| Show the work title | hide the work line for a plainer card |
+| Light card | a cream card with dark text, for a light home screen |
+| Shuffle the order | off walks the corpus in order |
 
-A filter that matches nothing falls back to the whole corpus, so the widget can
-never come up empty. *Apply* saves the settings and refreshes every placed
-widget.
+A selection that leaves nothing falls back to the whole corpus, so the widget can
+never come up empty.
+
+## Updates
+
+The app installs from this repository, not from a store, so it updates itself
+from the GitHub releases:
+
+1. Open *Settings* and find the *Updates* section. It names the installed
+   version.
+2. Tap *Check for updates*. The app asks GitHub for the latest release and
+   compares the two versions.
+3. If a later release exists, tap *Download and install*. The APK lands in the
+   app cache, and the system installer asks for your confirmation.
+
+The repository is private, so the GitHub API needs a token. Paste a fine-grained
+token with read access to the releases into the *GitHub token* field and tap
+*Save*. Without a token the check reports that GitHub has no release, because a
+private repository answers `404` to an anonymous request. The token stays on the
+phone. If the repository becomes public, the field can stay empty.
+
+The APK is debug signed, so Android accepts an update only while the releases
+come from the same signing key. Build future releases on this machine, or move
+`~/.android/debug.keystore` with the project. If the keys differ, Android
+refuses the update, and the app explains that the installed copy must be removed
+first.
 
 ## The corpus
 

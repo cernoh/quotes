@@ -11,5 +11,13 @@
     <color name="quote_rule">#8CD6B585</color>
     <color name="text_secondary">#A9998A</color>
 
+    <!-- The same card for a light home screen. -->
+    <color name="card_background_light">#F2F7F3EA</color>
+    <color name="card_stroke_light">#26000000</color>
+    <color name="quote_text_light">#1F1B16</color>
+    <color name="quote_author_light">#7A5A22</color>
+    <color name="quote_work_light">#6B6157</color>
+    <color name="quote_rule_light">#8C7A5A22</color>
+
     <color name="launcher_background">#14110E</color>
 </resources>

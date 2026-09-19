@@ -75,14 +75,15 @@ object WidgetRenderer {
                 "maxLines ${tier.maxLines}, padding ${tier.paddingDp}dp",
         )
 
+        val scale = Prefs.textScale(context) / 100f
         views.setTextViewTextSize(
-            R.id.quote_text, TypedValue.COMPLEX_UNIT_SP, tier.quoteSizeSp,
+            R.id.quote_text, TypedValue.COMPLEX_UNIT_SP, tier.quoteSizeSp * scale,
         )
         views.setTextViewTextSize(
-            R.id.quote_author, TypedValue.COMPLEX_UNIT_SP, tier.attributionSizeSp,
+            R.id.quote_author, TypedValue.COMPLEX_UNIT_SP, tier.attributionSizeSp * scale,
         )
         views.setTextViewTextSize(
-            R.id.quote_work, TypedValue.COMPLEX_UNIT_SP, tier.attributionSizeSp,
+            R.id.quote_work, TypedValue.COMPLEX_UNIT_SP, tier.attributionSizeSp * scale,
         )
         views.setInt(R.id.quote_text, "setMaxLines", tier.maxLines)
 
@@ -92,7 +93,32 @@ object WidgetRenderer {
         views.setViewVisibility(
             R.id.quote_rule, if (tier.showRule) View.VISIBLE else View.GONE,
         )
-        if (!tier.showWork) views.setViewVisibility(R.id.quote_work, View.GONE)
+
+        // The card settings come on top of what the size allows.
+        val light = Prefs.lightCard(context)
+        views.setInt(
+            R.id.quote_card, "setBackgroundResource",
+            if (light) R.drawable.card_background_light else R.drawable.card_background,
+        )
+        views.setTextColor(
+            R.id.quote_text, context.getColor(if (light) R.color.quote_text_light else R.color.quote_text),
+        )
+        views.setTextColor(
+            R.id.quote_author,
+            context.getColor(if (light) R.color.quote_author_light else R.color.quote_author),
+        )
+        views.setTextColor(
+            R.id.quote_work,
+            context.getColor(if (light) R.color.quote_work_light else R.color.quote_work),
+        )
+        views.setInt(
+            R.id.quote_rule, "setBackgroundColor",
+            context.getColor(if (light) R.color.quote_rule_light else R.color.quote_rule),
+        )
+
+        if (!tier.showWork || !Prefs.showWork(context)) {
+            views.setViewVisibility(R.id.quote_work, View.GONE)
+        }
     }
 
     private fun nextIntent(context: Context): PendingIntent = PendingIntent.getBroadcast(
