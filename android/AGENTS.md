@@ -23,8 +23,22 @@ Gradle project under `android/`, Kotlin sources under
   quotes. Never edit the asset by hand and never commit it.
 - `R.layout.widget_card` is the single card. `MainActivity` inflates the same
   layout, so the preview in the app is the widget, not a copy of it.
-- A plain `View` is not a RemoteViews view. The rule under the quote is a
-  `TextView` with a background colour for that reason.
+- The widget MUST size itself to the cell it is given. `WidgetSizing` turns the
+  placed size into a text size, a line limit, and a padding, and
+  `WidgetRenderer.applyTier` applies them on every render, including after
+  `onAppWidgetOptionsChanged`.
+- Read the current size from the option pair for the orientation. Measured on an
+  emulator, a 3 by 2 placement reports minimum 224x136dp and maximum 434x284dp,
+  and the widget draws 224 wide by 284 high. The current size is therefore the
+  minimum width and the maximum height in portrait, and the reverse in landscape.
+  Reading the minimum height instead sized the card for a cell it did not have.
+- The line limit MUST come from the height, not from the class alone: a class
+  whose lines do not fit drops to a smaller class, or to fewer lines. Without
+  that, a long quote pushes the author off the card.
+- `widget_card.xml` keeps the largest sizes as its defaults, because the activity
+  inflates the same layout. The widget overrides them per placement.
+- Every render logs one line: `widget <id> is <w>x<h>dp: <size>sp, maxLines <n>,
+  padding <n>dp`. Use `adb logcat -s quotes:I` to see what the launcher reported.
 - `PreferenceManager` is not used. `Prefs` holds the rotation position, the
   shuffle seed, the interval and the filters.
 - The corpus is shuffled from a stored seed rather than stored as a list, so a

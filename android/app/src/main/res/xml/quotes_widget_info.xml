@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  The widget adapts to its cell footprint, so the minimums are small and 3 by 2
+  is the default placement. WidgetSizing turns the placed size into text size,
+  line limit, and padding.
+-->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/widget_description"
     android:initialLayout="@layout/widget_card"
-    android:minHeight="140dp"
-    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:minResizeHeight="110dp"
+    android:minResizeWidth="180dp"
+    android:minWidth="180dp"
     android:previewLayout="@layout/widget_card"
     android:resizeMode="horizontal|vertical"
-    android:targetCellHeight="3"
-    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:targetCellWidth="3"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen" />
