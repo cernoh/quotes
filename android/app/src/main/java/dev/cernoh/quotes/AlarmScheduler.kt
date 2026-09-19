@@ -11,10 +11,11 @@ object AlarmScheduler {
 
     fun schedule(context: Context) {
         val alarms = context.getSystemService(AlarmManager::class.java) ?: return
-        val interval = Prefs.intervalMinutes(context)
-            .coerceAtLeast(Prefs.MIN_INTERVAL_MINUTES) * 60_000L
         val pending = pending(context)
         alarms.cancel(pending)
+        if (!Prefs.rotates(context)) return
+        val interval = Prefs.intervalMinutes(context)
+            .coerceAtLeast(Prefs.MIN_INTERVAL_MINUTES) * 60_000L
         alarms.setInexactRepeating(
             AlarmManager.RTC,
             System.currentTimeMillis() + interval,

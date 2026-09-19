@@ -39,8 +39,28 @@ Gradle project under `android/`, Kotlin sources under
   inflates the same layout. The widget overrides them per placement.
 - Every render logs one line: `widget <id> is <w>x<h>dp: <size>sp, maxLines <n>,
   padding <n>dp`. Use `adb logcat -s quotes:I` to see what the launcher reported.
-- `PreferenceManager` is not used. `Prefs` holds the rotation position, the
-  shuffle seed, the interval and the filters.
+- Settings live in `SettingsActivity`, one section each: rotation, sources,
+  card, order, and updates. Every change writes to `Prefs` and calls
+  `WidgetRenderer.updateAll` at once, so there is no Apply button. `MainActivity`
+  keeps only the card, the next-quote button, the add-widget button, and the
+  button that opens the settings.
+- Source selections are multi-choice lists built from the corpus, not free text.
+  An empty selection means the whole corpus, and a selection that matches nothing
+  falls back to the whole corpus.
+- `Updates` holds the whole update path: read the latest GitHub release, compare
+  versions, download the APK, and hand it to the system installer through
+  `PackageInstaller`. Never install anything directly, and never run the check in
+  the background: the user taps a button or nothing happens.
+- A private repository answers `404` to an anonymous release request, so
+  `Updates.check` reports a missing token rather than a network fault on 404.
+  Keep that distinction: it is the difference between "add a token" and "your
+  network is down".
+- The two permissions in the manifest have one purpose each: `INTERNET` for the
+  update check, `REQUEST_INSTALL_PACKAGES` for the installer handover. Adding a
+  third needs a reason in this file.
+- `MainActivity` and `SettingsActivity` MUST call `WindowSpacing.apply` on their
+  root view. The app draws edge to edge, so a screen that skips it puts its
+  content under the status bar and the camera cutout.
 - The corpus is shuffled from a stored seed rather than stored as a list, so a
   widget redraw after a reboot shows the same order.
 - Actions: `dev.cernoh.quotes.action.NEXT` from a tap,
@@ -78,6 +98,11 @@ adb exec-out screencap -p > /tmp/app.png
   usually reports the displayed size instead.
 - `gradle copyCorpus` MUST fail when `data/quotes.json` breaks a rule. Break one
   rule on purpose when the task changes.
+- `gradle test` covers the size classes and the update logic. The live update
+  call cannot be tested without a token for the private repository: the anonymous
+  path returns the 404 message, which is the state to expect on a fresh install.
+- A setting MUST reach the placed widget in one tap. Toggle *Light card* and
+  check the home screen, not only the preview in the app.
 
 ## Child DOX Index
 

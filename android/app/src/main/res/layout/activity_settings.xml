@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_background"
+    android:clipToPadding="false"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Rotation -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_rotation" />
+
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/interval_label" />
+
+        <Spinner
+            android:id="@+id/interval_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/interval_note" />
+
+        <!-- Sources -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_gap"
+            android:text="@string/section_sources" />
+
+        <Button
+            android:id="@+id/row_authors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/author_label" />
+
+        <Button
+            android:id="@+id/row_works"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/work_label" />
+
+        <!-- Card -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_gap"
+            android:text="@string/section_card" />
+
+        <TextView
+            android:id="@+id/scale_label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap" />
+
+        <SeekBar
+            android:id="@+id/scale_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Switch
+            android:id="@+id/switch_work"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/switch_work"
+            android:textColor="@color/quote_text" />
+
+        <Switch
+            android:id="@+id/switch_light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/switch_light"
+            android:textColor="@color/quote_text" />
+
+        <!-- Order -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_gap"
+            android:text="@string/section_order" />
+
+        <Switch
+            android:id="@+id/switch_shuffle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/switch_shuffle"
+            android:textColor="@color/quote_text" />
+
+        <!-- Updates -->
+        <TextView
+            style="@style/SectionLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_gap"
+            android:text="@string/section_updates" />
+
+        <TextView
+            android:id="@+id/installed_label"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap" />
+
+        <Button
+            android:id="@+id/button_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/check_updates" />
+
+        <Button
+            android:id="@+id/button_install"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/download_install"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/update_status"
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap" />
+
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/block_gap"
+            android:text="@string/token_label" />
+
+        <EditText
+            android:id="@+id/field_token"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/token_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPassword"
+            android:textColor="@color/quote_text"
+            android:textColorHint="@color/text_secondary" />
+
+        <Button
+            android:id="@+id/button_save_token"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/save" />
+
+        <TextView
+            style="@style/FieldLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_gap"
+            android:text="@string/token_note" />
+    </LinearLayout>
+</ScrollView>

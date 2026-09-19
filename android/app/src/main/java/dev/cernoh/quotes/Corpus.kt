@@ -37,17 +37,28 @@ object Corpus {
         return quotes
     }
 
+    /** Every author name, sorted, for the settings list. */
+    fun authors(context: Context): List<String> =
+        load(context).map { it.author }.distinct().sorted()
+
+    /** Every work title, sorted, for the settings list. */
+    fun works(context: Context): List<String> =
+        load(context).mapNotNull { it.work }.distinct().sorted()
+
     /**
-     * Quotes matching the filters. A blank filter matches everything, and a
-     * filter that matches nothing falls back to the whole corpus, so the widget
-     * can never end up empty.
+     * Quotes matching the stored source selection. An empty selection matches
+     * everything, and a selection that leaves nothing falls back to the whole
+     * corpus, so the widget can never end up empty.
      */
-    fun filtered(context: Context, author: String, work: String): List<Quote> {
-        val all = load(context)
-        if (author.isBlank() && work.isBlank()) return all
+    fun filtered(context: Context): List<Quote> =
+        filtered(load(context), Prefs.authors(context), Prefs.works(context))
+
+    /** The same rule, over a given corpus and selection. */
+    fun filtered(all: List<Quote>, authors: Set<String>, works: Set<String>): List<Quote> {
+        if (authors.isEmpty() && works.isEmpty()) return all
         val kept = all.filter { quote ->
-            (author.isBlank() || quote.author.contains(author, ignoreCase = true)) &&
-                (work.isBlank() || (quote.work ?: "").contains(work, ignoreCase = true))
+            (authors.isEmpty() || authors.contains(quote.author)) &&
+                (works.isEmpty() || works.contains(quote.work))
         }
         return kept.ifEmpty { all }
     }

@@ -10,9 +10,11 @@ Owns the images that the top-level `README.md` shows.
 
 ## Local Contracts
 
-- `screenshots/app.png` shows the app screen: the card and the two buttons.
+- `screenshots/app.png` shows the app screen: the card, the next-quote button,
+  the add-widget button, the settings button, and the grounding line.
 - `screenshots/home.png` shows the home screen with the widget in place.
-- Both are 420 pixels wide, so they sit side by side in the README.
+- `screenshots/settings.png` shows the settings page.
+- All are 420 pixels wide, so they sit side by side in the README.
 - An image MUST come from a real run of the app on a device or an emulator. A
   mock, a design tool drawing, or a screenshot of an older release is not
   allowed here.

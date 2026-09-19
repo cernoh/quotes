@@ -8,18 +8,60 @@
     <string name="add_widget">Add widget</string>
     <string name="settings">Settings</string>
     <string name="apply">Apply</string>
+    <string name="save">Save</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="section_rotation">Rotation</string>
+    <string name="section_sources">Sources</string>
+    <string name="section_card">Card</string>
+    <string name="section_order">Order</string>
+    <string name="section_updates">Updates</string>
 
     <string name="interval_label">Rotate every</string>
-    <string name="author_label">Only these authors</string>
-    <string name="author_hint">e.g. Dostoevsky</string>
-    <string name="work_label">Only these works</string>
-    <string name="work_hint">e.g. White Nights</string>
-
-    <string name="source_label">Grounded on %1$s</string>
-    <string name="settings_saved">Saved</string>
-    <string name="pin_unsupported">This launcher cannot pin the widget. Add it from the home screen widget list instead.</string>
-
+    <string name="interval_note">Android does not run repeating work more often than every 15 minutes.</string>
+    <string name="interval_never">Never, only when I tap</string>
     <string name="interval_minutes">%1$d minutes</string>
     <string name="interval_hour">1 hour</string>
     <string name="interval_hours">%1$d hours</string>
+
+    <string name="author_label">Authors</string>
+    <string name="author_hint">e.g. Dostoevsky</string>
+    <string name="work_label">Works</string>
+    <string name="work_hint">e.g. White Nights</string>
+    <string name="source_all">%1$s: all %2$d</string>
+    <string name="source_one">%1$s: %2$s</string>
+    <string name="source_some">%1$s: %2$d selected</string>
+
+    <string name="scale_value">Text size: %1$d%%</string>
+    <string name="switch_work">Show the work title</string>
+    <string name="switch_light">Light card</string>
+    <string name="switch_shuffle">Shuffle the order</string>
+
+    <string name="update_installed">Installed version: %1$s</string>
+    <string name="check_updates">Check for updates</string>
+    <string name="download_install">Download and install</string>
+    <string name="update_checking">Checking the latest release\u2026</string>
+    <string name="update_latest">Up to date. Version %1$s is the latest release.</string>
+    <string name="update_available">Version %1$s is available. You have %2$s.</string>
+    <string name="update_downloading">Downloading\u2026</string>
+    <string name="update_installing">Handing the file to the installer\u2026</string>
+    <string name="update_download_failed">The download failed: %1$s</string>
+    <string name="token_label">GitHub token</string>
+    <string name="token_hint">Only needed while the repository is private</string>
+    <string name="token_note">The app asks GitHub only when you tap the button. The token stays on this phone.</string>
+    <string name="token_saved">Token saved.</string>
+
+    <string name="install_waiting">Waiting for your confirmation.</string>
+    <string name="install_ok">Updated. Open the app again to see the new version.</string>
+    <string name="install_cancelled">The install was cancelled.</string>
+    <string name="install_blocked">Android blocked the install. Allow it for this app in the system settings.</string>
+    <string name="install_conflict">The new version clashes with the installed one. Remove the app, then install again.</string>
+    <string name="install_incompatible">The new version is not compatible with this device.</string>
+    <string name="install_invalid">The downloaded file is not a valid update.</string>
+    <string name="install_storage">Not enough space for the update.</string>
+    <string name="install_unknown">The install did not finish.</string>
+
+    <string name="source_label">Grounded on %1$s</string>
+    <string name="pin_unsupported">This launcher cannot pin the widget. Add it from the home screen widget list instead.</string>
 </resources>

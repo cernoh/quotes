@@ -76,6 +76,8 @@ tasks.named("preBuild") {
 }
 
 dependencies {
-    // Framework APIs only in the app. The tests use JUnit for the size classes.
+    // Framework APIs only in the app. The tests need JUnit, and a real org.json
+    // because the android.jar copy is a stub that throws on the JVM.
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20250517")
 }
