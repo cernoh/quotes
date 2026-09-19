@@ -111,3 +111,4 @@ Default section order:
   layout, and the corpus wiring into the APK.
 - `data/AGENTS.md` owns the quote corpus, its schema, and its grounding rules.
 - `tools/AGENTS.md` owns the corpus checks that run outside the build.
+- `docs/AGENTS.md` owns the screenshots that the README shows.
