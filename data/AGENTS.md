@@ -45,11 +45,13 @@ not belong in this file, however well known it is.
 
 ## Verification
 
-- `nix flake check` runs `tools/check-corpus.py`: shape, key set, text length,
-  duplicate text, `source` prefix, minimum counts.
+- `nix run nixpkgs#python3 -- tools/check-corpus.py` checks shape, key set, text
+  length, duplicate text, `source` prefix and the minimum counts.
+- `cd android && gradle copyCorpus` runs the same floor at build time and copies
+  the corpus into the APK assets.
 - `nix run nixpkgs#python3 -- tools/verify-grounding.py` fetches every source
-  page and shows that each `text` appears in it. This needs the network, so it
-  stays out of `nix flake check`.
+  page and shows that each `text` appears in it. This needs the network, so no
+  build runs it.
 
 ## Child DOX Index
 

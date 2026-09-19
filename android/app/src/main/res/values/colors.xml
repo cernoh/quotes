@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The card sits over wallpaper, so it is dark and slightly transparent. -->
+    <color name="card_background">#B81A1511</color>
+    <color name="card_stroke">#33D6B585</color>
+    <color name="screen_background">#14110E</color>
+
+    <color name="quote_text">#F2EADC</color>
+    <color name="quote_author">#D9B98A</color>
+    <color name="quote_work">#9A8B79</color>
+    <color name="quote_rule">#8CD6B585</color>
+    <color name="text_secondary">#A9998A</color>
+
+    <color name="launcher_background">#14110E</color>
+</resources>

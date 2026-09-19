@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Quotes</string>
+    <string name="widget_name">Quote of the moment</string>
+    <string name="widget_description">A line from a classic book, with the author and the work</string>
+
+    <string name="next_quote">Next quote</string>
+    <string name="add_widget">Add widget</string>
+    <string name="settings">Settings</string>
+    <string name="apply">Apply</string>
+
+    <string name="interval_label">Rotate every</string>
+    <string name="author_label">Only these authors</string>
+    <string name="author_hint">e.g. Dostoevsky</string>
+    <string name="work_label">Only these works</string>
+    <string name="work_hint">e.g. White Nights</string>
+
+    <string name="source_label">Grounded on %1$s</string>
+    <string name="settings_saved">Saved</string>
+    <string name="pin_unsupported">This launcher cannot pin the widget. Add it from the home screen widget list instead.</string>
+
+    <string name="interval_minutes">%1$d minutes</string>
+    <string name="interval_hour">1 hour</string>
+    <string name="interval_hours">%1$d hours</string>
+</resources>

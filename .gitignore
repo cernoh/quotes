@@ -1,5 +1,19 @@
+# Nix
 result
 result-*
-.direnv
+.direnv/
+
+# Python
 __pycache__/
 *.pyc
+
+# Android build output
+android/.gradle/
+android/build/
+android/app/build/
+android/.kotlin/
+android/local.properties
+# Derived from data/quotes.json by the copyCorpus Gradle task
+android/app/src/main/assets/quotes.json
+# Emulator and SDK state created inside the checkout by shell.nix
+.android/
