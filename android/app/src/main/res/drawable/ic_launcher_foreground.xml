@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A short line of gold over three lines of ink: a quote on a page. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M34,38 L52,38"
+        android:strokeColor="#D9B98A"
+        android:strokeLineCap="round"
+        android:strokeWidth="4" />
+    <path
+        android:pathData="M34,50 L74,50"
+        android:strokeColor="#F2EADC"
+        android:strokeLineCap="round"
+        android:strokeWidth="4" />
+    <path
+        android:pathData="M34,62 L74,62"
+        android:strokeColor="#F2EADC"
+        android:strokeLineCap="round"
+        android:strokeWidth="4" />
+    <path
+        android:pathData="M34,74 L58,74"
+        android:strokeColor="#F2EADC"
+        android:strokeLineCap="round"
+        android:strokeWidth="4" />
+</vector>

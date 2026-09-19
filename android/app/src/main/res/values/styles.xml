@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/screen_background</item>
+        <item name="android:colorAccent">@color/quote_author</item>
+    </style>
+
+    <style name="QuoteText">
+        <item name="android:fontFamily">@font/eb_garamond</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/quote_text</item>
+        <item name="android:lineSpacingExtra">5dp</item>
+    </style>
+
+    <style name="QuoteAuthor">
+        <item name="android:fontFamily">@font/eb_garamond</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/quote_author</item>
+        <item name="android:letterSpacing">0.12</item>
+    </style>
+
+    <style name="QuoteWork">
+        <item name="android:fontFamily">@font/eb_garamond</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/quote_work</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="SectionLabel">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/quote_text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="FieldLabel">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+</resources>

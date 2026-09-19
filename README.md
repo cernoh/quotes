@@ -1,60 +1,61 @@
 # quotes
 
-A small desktop widget that puts one line from a classic book on the screen and
-leaves it there: Dostoevsky, Murakami, Mishima, Kafka, Camus, Rilke, Marcus
-Aurelius, Woolf, Baldwin, and others. Lines about staying alive, keeping on, and
+An Android app and home screen widget that puts one line from a classic book on
+your phone: Dostoevsky, Murakami, Mishima, Dazai, Kafka, Camus, Rilke, Marcus
+Aurelius, Woolf, Baldwin and others. Lines about staying alive, keeping on, and
 getting through the day.
 
-The widget is a GTK4 window placed by `gtk4-layer-shell` on a Wayland layer, so
-it sits above the wallpaper like an ornament. One quote is visible at a time. It
-changes on a timer and fades between quotes. A left click moves to the next
-quote, a right click prints the current quote and quits.
+The card is set in EB Garamond, which ships inside the APK. It shows the quote,
+the author in letterspaced capitals, and the work in italics. Tap the quote for
+the next one; tap the attribution to open the app.
 
-## Run it
+The app has no internet permission. The corpus is compiled into the APK, so the
+widget works with the phone offline.
 
-```sh
-nix run github:cernoh/quotes                       # widget in the bottom right
-nix run github:cernoh/quotes -- --anchor top-left  # somewhere else
-nix run github:cernoh/quotes -- --print --seed 7    # one quote in the terminal
-nix run github:cernoh/quotes -- --list             # authors and counts
-```
-
-From a checkout:
+## Build and install
 
 ```sh
-nix run .
-nix develop      # python3 with pygobject, gtk4, gtk4-layer-shell, grim
+nix-shell                      # Android SDK, build tools, emulator, Gradle, JDK 21
+cd android
+gradle assembleDebug \
+  -Pandroid.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Options
+The `-P` flag is required on NixOS. AGP downloads its own `aapt2` from Google
+Maven and runs it as a daemon; that binary is built for a generic Linux and
+cannot start here. The flag points AGP at the `aapt2` from the SDK. A line in
+`local.properties` does not work: AGP reads that setting only from a Gradle
+property.
 
-| Flag | Default | Effect |
-| --- | --- | --- |
-| `--interval SECONDS` | `600` | time between quotes |
-| `--anchor CORNER` | `bottom-right` | `bottom-right`, `bottom-left`, `top-right`, `top-left` |
-| `--margin PIXELS` | `44` | distance from the screen edge |
-| `--width PIXELS` | `470` | card width; the quote wraps inside it |
-| `--font FAMILY` | `EB Garamond` | serif family; the bundled font is registered at startup |
-| `--size PIXELS` | `21` | quote text size |
-| `--layer LAYER` | `top` | Wayland layer: `background`, `bottom`, `top`, `overlay`. `top` keeps the card above windows; `bottom` makes it a desktop ornament that windows cover |
-| `--author NAME` | - | only quotes whose author matches the substring |
-| `--work TITLE` | - | only quotes from a book or essay matching the substring |
-| `--interactive` | off | take keyboard focus on demand, so `n` and `q` work |
-| `--seed N` | random | make the shuffle order repeatable |
-| `--data PATH` | bundled | use another corpus file |
-| `--print` | - | print one quote and exit |
-| `--list` | - | print authors and counts, then exit |
+`shell.nix` composes the SDK from nixpkgs. It needs
+`android_sdk.accept_license = true`, which the file sets.
 
-## Keys and clicks
+## The widget
 
-- left click: next quote
-- right click: print the current quote to stdout, then quit
-- `n`, space, right arrow: next quote (needs `--interactive`)
-- `q`, escape: quit (needs `--interactive`)
+- **Add it**: open the app and tap *Add widget*, or long-press the home screen,
+  open *Widgets*, and pick *Quote of the moment*.
+- **Tap the quote**: show the next quote.
+- **Tap the author**: open the app.
+- **Rotation**: every 15, 30, 60, 120 or 240 minutes. An inexact alarm drives
+  it, so the system may delay an update a little to save power. Android does not
+  fire repeating alarms more often than 15 minutes; a smaller number is clamped.
 
-## Corpus
+## Settings
 
-`data/quotes.json` holds the corpus. Each entry has four fields:
+| Setting | Effect |
+| --- | --- |
+| Rotate every | how long each quote stays |
+| Only these authors | case-insensitive match on the author name, for example `Dostoevsky` |
+| Only these works | case-insensitive match on the work title, for example `White Nights` |
+
+A filter that matches nothing falls back to the whole corpus, so the widget can
+never come up empty. *Apply* saves the settings and refreshes every placed
+widget.
+
+## The corpus
+
+`data/quotes.json` is the single source of truth:
 
 ```json
 {
@@ -67,35 +68,30 @@ nix develop      # python3 with pygobject, gtk4, gtk4-layer-shell, grim
 
 The rule for this repository: every `text` value comes from the English
 Wikiquote page named in `source`, character for character. No quote is written
-from memory, and no quote is paraphrased. `work` names the book or essay the
-line comes from; it is `null` when Wikiquote gives no work.
+from memory, and no quote is paraphrased. `work` names the book, story or essay,
+and is `null` when Wikiquote gives none.
+
+Three checks hold that rule:
 
 ```sh
-nix flake check                      # validates shape, uniqueness and grounding
-python3 tools/check-corpus.py        # the same check, run directly
+nix run nixpkgs#python3 -- tools/check-corpus.py      # shape, duplicates, counts
+nix run nixpkgs#python3 -- tools/verify-grounding.py  # fetches every source page
+cd android && gradle copyCorpus                       # the build-time gate
 ```
 
-## Start it with the session
-
-mango reads its config from a file, so a `spawn_shell` line runs the widget at
-login:
-
-```conf
-spawn_shell = nix run github:cernoh/quotes -- --interval 900
-```
-
-For a stored build, run the wrapper from the profile instead of `nix run`:
-
-```sh
-nix profile install github:cernoh/quotes
-```
+The Gradle task `copyCorpus` copies the corpus into the APK assets and fails the
+build when a quote misses a key, when a text falls outside 40 to 400 characters,
+when a source is not a Wikiquote URL, or when the corpus drops below 40 quotes.
 
 ## Layout
 
 ```
-data/quotes.json        the corpus
-quotes/widget.py        the GTK4 layer-shell widget and its CLI
-tools/check-corpus.py   the corpus validator (offline, runs as a flake check)
-tools/verify-grounding.py  fetches every source page and proves each quote is on it
-flake.nix               package, app, dev shell, corpus check
+data/quotes.json                  the corpus
+tools/check-corpus.py             offline validation
+tools/verify-grounding.py         proves each quote is on its source page
+android/                          the app and the widget
+shell.nix                         the Android toolchain from nixpkgs
 ```
+
+The typeface is EB Garamond by Georg Duffner and Octavio Pardo, used under the
+SIL Open Font License 1.1.

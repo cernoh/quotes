@@ -12,10 +12,10 @@ Owns the repository checks that run outside the build sandbox.
 
 - Both scripts take `--data` (`check-corpus.py`: a positional path) and exit
   non-zero on failure, printing one line per problem.
-- `check-corpus.py` MUST stay offline: `nix flake check` runs it inside the Nix
-  sandbox, where the network is unavailable.
-- `verify-grounding.py` needs the network. It MUST stay out of `nix flake check`
-  and run by hand instead.
+- `check-corpus.py` MUST stay offline. It runs by hand, and the Gradle
+  `copyCorpus` task applies the same rules at build time.
+- `verify-grounding.py` needs the network. It MUST stay out of every build and
+  run by hand instead.
 
 ## Work Guidance
 
@@ -26,9 +26,10 @@ Owns the repository checks that run outside the build sandbox.
 
 ## Verification
 
-- `nix flake check` runs the corpus check.
-- `nix run nixpkgs#python3 -- tools/verify-grounding.py` runs the grounding
-  check and prints the count of quotes and pages.
+- `nix run nixpkgs#python3 -- tools/check-corpus.py` prints the quote and author
+  counts, or one line per problem.
+- `nix run nixpkgs#python3 -- tools/verify-grounding.py` prints the count of
+  quotes and pages it checked.
 
 ## Child DOX Index
 

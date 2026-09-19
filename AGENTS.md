@@ -95,16 +95,19 @@ Default section order:
 
 ## User Preferences
 
-- Quote widget: desktop widget on the Wayland session (GTK4 + gtk4-layer-shell),
-  serif typography (EB Garamond), quotes grounded verbatim in English Wikiquote
-  with authorship and work title shown.
-- Never write a quote from memory. Every quote text value MUST appear
+- Quote widget: an Android home screen app widget (RemoteViews) and a small
+  companion activity. Not a desktop widget: the GTK4 layer-shell widget that
+  came first was rejected and removed. Serif typography (EB Garamond, bundled in
+  the APK), quotes grounded verbatim in English Wikiquote with authorship and
+  work title shown.
+- Never write a quote from memory. Every quote `text` value MUST appear
   character-for-character in the Wikiquote page recorded in its `source` field.
 - Repo has a GitHub remote (`cernoh/quotes`): issue-linked branch and PR for
   every change.
 
 ## Child DOX Index
 
-- `quotes/AGENTS.md` owns the GTK4 layer-shell widget, its CLI, and its runtime
-  behaviour.
+- `android/AGENTS.md` owns the Android app, the home screen widget, the card
+  layout, and the corpus wiring into the APK.
 - `data/AGENTS.md` owns the quote corpus, its schema, and its grounding rules.
+- `tools/AGENTS.md` owns the corpus checks that run outside the build.
