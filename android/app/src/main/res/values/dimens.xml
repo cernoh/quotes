@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  The card radius and the text spacing come from design seed 62314:
+  radius 12 + (seed % 3) * 2 = 14dp, and the author letterspacing
+  0.08 + 0.02 * (seed % 3) = 0.10 em.
+-->
 <resources>
     <!-- Padding from the screen edges, before the window insets are added. -->
     <dimen name="screen_padding">24dp</dimen>
+    <!-- The spacing scale is 4dp, from the seed. -->
+    <dimen name="space">4dp</dimen>
     <!-- Between the card and the buttons. -->
     <dimen name="block_gap">20dp</dimen>
     <!-- Between two sections of the settings page. -->
@@ -9,4 +16,7 @@
     <!-- Between a label and its control. -->
     <dimen name="field_gap">8dp</dimen>
     <dimen name="card_preview_height">260dp</dimen>
+    <dimen name="card_radius">14dp</dimen>
+    <!-- Width of the rule under the quote. -->
+    <dimen name="quote_rule_width">32dp</dimen>
 </resources>

@@ -39,11 +39,32 @@ Gradle project under `android/`, Kotlin sources under
   inflates the same layout. The widget overrides them per placement.
 - Every render logs one line: `widget <id> is <w>x<h>dp: <size>sp, maxLines <n>,
   padding <n>dp`. Use `adb logcat -s quotes:I` to see what the launcher reported.
+
+## Styling
+
+- The palette is the desktop sepia scheme, so the phone and the desktop read as
+  one print: `base #1e1813` for the screen, `surface #241d17` for the card,
+  `text #ece0cd`, `primary #c99a5b` for the accent, `textDim #9c8c74`,
+  `outline #5f4d3a` for the card edge. Change them in `res/values/colors.xml`
+  only.
+- A few numbers come from a design seed, rolled from `/dev/urandom` as `62314`:
+  the card radius is `12 + seed % 3 * 2 = 14dp`, the card alpha is
+  `0.72 + 0.06 * (seed % 3) = 0.78`, and the author letterspacing is
+  `0.08 + 0.02 * (seed % 3) = 0.10em`. The rule width and the spacing scale
+  follow the same idea: `res/values/dimens.xml`. Re-roll the seed and recompute
+  those numbers, rather than editing them by feel.
+- Keep it minimal: two typefaces (EB Garamond for the card and the section
+  headings, the system face for controls), flat buttons with no slab, one
+  accent, and no shadows beyond the card.
+- The widget card and the app preview share `widget_card.xml` and the same
+  drawables, so a colour change reaches both.
+- The card colour switch in the settings picks the light drawable and the
+  `*_light` colours. Add a colour to both sets, or the light card breaks.
 - Settings live in `SettingsActivity`, one section each: rotation, sources,
   card, order, and updates. Every change writes to `Prefs` and calls
-  `WidgetRenderer.updateAll` at once, so there is no Apply button. `MainActivity`
-  keeps only the card, the next-quote button, the add-widget button, and the
-  button that opens the settings.
+  `WidgetRenderer.updateAll` at once, so there is no Apply button.
+  `MainActivity` keeps only the card, the next-quote button, the add-widget
+  button, and the button that opens the settings.
 - Source selections are multi-choice lists built from the corpus, not free text.
   An empty selection means the whole corpus, and a selection that matches nothing
   falls back to the whole corpus.

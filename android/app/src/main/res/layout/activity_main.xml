@@ -25,6 +25,7 @@
 
             <Button
                 android:id="@+id/button_next"
+                style="@style/QuotesButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -32,16 +33,17 @@
 
             <Button
                 android:id="@+id/button_add"
+                style="@style/QuotesButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/field_gap"
                 android:layout_weight="1"
                 android:text="@string/add_widget" />
         </LinearLayout>
 
         <Button
             android:id="@+id/button_settings"
-            android:layout_width="match_parent"
+            style="@style/QuotesButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/field_gap"
             android:text="@string/settings" />

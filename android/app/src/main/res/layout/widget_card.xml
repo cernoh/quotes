@@ -24,7 +24,7 @@
 
     <TextView
         android:id="@+id/quote_rule"
-        android:layout_width="34dp"
+        android:layout_width="@dimen/quote_rule_width"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="10dp"

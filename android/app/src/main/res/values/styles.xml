@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- The framework theme, pointed at the sepia palette: the background is
+         base, the accent and every control tint is primary. -->
     <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/screen_background</item>
         <item name="android:colorAccent">@color/quote_author</item>
+        <item name="android:colorControlActivated">@color/quote_author</item>
+        <item name="android:colorControlNormal">@color/text_secondary</item>
+        <item name="android:textColorPrimary">@color/quote_text</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/quote_work</item>
     </style>
 
+    <!-- The card. EB Garamond ships with the app, so the quote and its
+         attribution keep the printed look on every device. -->
     <style name="QuoteText">
         <item name="android:fontFamily">@font/eb_garamond</item>
         <item name="android:textSize">18sp</item>
@@ -16,7 +25,7 @@
         <item name="android:fontFamily">@font/eb_garamond</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/quote_author</item>
-        <item name="android:letterSpacing">0.12</item>
+        <item name="android:letterSpacing">0.1</item>
     </style>
 
     <style name="QuoteWork">
@@ -26,14 +35,28 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <!-- Settings section headings, in the serif face and the accent colour. -->
     <style name="SectionLabel">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/quote_text</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/eb_garamond</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/quote_author</item>
+        <item name="android:letterSpacing">0.04</item>
     </style>
 
     <style name="FieldLabel">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <!-- Flat buttons: no grey slab, the accent colour, and sentence case. -->
+    <style name="QuotesButton" parent="@android:style/Widget.Material.Button.Borderless">
+        <item name="android:textColor">@color/quote_author</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
     </style>
 </resources>
